@@ -36,4 +36,24 @@ public class AuthenticationRepository {
         return jdbcCall.execute(params);
     }
 
+    public Map<String, Object> authenticateStudent(String email, String password) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("INICIO_SESION_ESTUDIANTE")
+                .declareParameters(
+                        new SqlParameter("p_correo", Types.VARCHAR),
+                        new SqlParameter("p_contrasena", Types.VARCHAR),
+                        new SqlOutParameter("p_estudiante_id", Types.NUMERIC),
+                        new SqlOutParameter("p_codigo", Types.VARCHAR),
+                        new SqlOutParameter("p_nombre", Types.VARCHAR),
+                        new SqlOutParameter("p_resultado", Types.VARCHAR),
+                        new SqlOutParameter("p_mensaje", Types.VARCHAR)
+                );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("p_correo", email);
+        params.put("p_contrasena", password);
+
+        return jdbcCall.execute(params);
+    }
+
 }

@@ -1,6 +1,7 @@
 package co.catavento.quizzki.services;
 
 import co.catavento.quizzki.records.authentication.LoginResponseDTO;
+import co.catavento.quizzki.records.authentication.StudentLoginDTO;
 import co.catavento.quizzki.records.authentication.TeacherLoginDTO;
 import co.catavento.quizzki.repositories.AuthenticationRepository;
 import co.catavento.quizzki.utils.ApiResponse;
@@ -45,4 +46,33 @@ public class AuthenticationService {
             return new ApiResponse<>("ERROR", "Error iniciando la sesión: " + e.getMessage(), null);
         }
     }
+
+    public ApiResponse<LoginResponseDTO> loginStudent(StudentLoginDTO loginDTO) {
+        try {
+            Map<String, Object> result = authRepository.authenticateStudent(
+                    loginDTO.email(),
+                    loginDTO.password()
+            );
+
+            String status = (String) result.get("p_resultado");
+            String message = (String) result.get("p_mensaje");
+
+            if ("EXITO".equals(status)) {
+                Long studentId = ((Number) result.get("p_estudiante_id")).longValue();
+                String code = (String) result.get("p_codigo");
+                String name = (String) result.get("p_nombre");
+
+                String jwt = jwtUtil.generateToken(loginDTO.email());
+                // We instantiate the response DTO for the service
+                LoginResponseDTO responseDTO = new LoginResponseDTO(jwt, String.valueOf(studentId));
+
+                return new ApiResponse<>("EXITO", "Inicio de sesión exitoso", responseDTO);
+            } else {
+                return new ApiResponse<>("ERROR", "Error iniciando la sesión: " + message, null);
+            }
+        } catch (Exception e) {
+            return new ApiResponse<>("ERROR", "Error iniciando la sesión: " + e.getMessage(), null);
+        }
+    }
+
 }
