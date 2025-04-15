@@ -23,7 +23,7 @@ public class SecurityConfig {
         http
                 .securityMatcher("/**") // Apply security to all routes
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/autenticacion/**").permitAll() // Public routes
+                        .requestMatchers("/api/auth/**").permitAll() // Public routes
                         .anyRequest().authenticated() // All others require authentication
                 )
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity (usually required for REST APIs)
