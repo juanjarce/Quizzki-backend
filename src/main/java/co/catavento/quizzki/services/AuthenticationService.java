@@ -7,6 +7,7 @@ import co.catavento.quizzki.repositories.AuthenticationRepository;
 import co.catavento.quizzki.utils.ApiResponse;
 import co.catavento.quizzki.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
+    @Autowired
     private final AuthenticationRepository authRepository;
+
     private final JwtUtil jwtUtil;
 
     public ApiResponse<LoginResponseDTO> loginProfessor(TeacherLoginDTO loginDTO) {
