@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -89,5 +90,48 @@ public class TeacherService {
             return new ApiResponse<>("ERROR", "Error al crear opción de respuesta: " + errorMessage, null);
         }
     }
+
+    public ApiResponse<List<Map<String, Object>>> getSubjects(String token) {
+        // Token validation
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Token inválido");
+        }
+
+        // We call the repository
+        Map<String, Object> result = teacherRepository.getSubjects();
+
+        // We get the status and message of the result
+        String status = (String) result.get("p_estado_out");
+        String message = (String) result.get("p_mensaje_out");
+
+        if ("EXITO".equalsIgnoreCase(status)) {
+            List<Map<String, Object>> materias = (List<Map<String, Object>>) result.get("p_materias_cursor");
+            return new ApiResponse<>("EXITO", "Materias obtenidas correctamente", materias);
+        } else {
+            return new ApiResponse<>("ERROR", "Error al obtener las materias: " + message, null);
+        }
+    }
+
+    public ApiResponse<List<Map<String, Object>>> getTopics(String token) {
+        // Token validation
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Token inválido");
+        }
+
+        // We call the repository
+        Map<String, Object> result = teacherRepository.getTopics();
+
+        // We get the status and message of the result
+        String status = (String) result.get("p_estado_out");
+        String message = (String) result.get("p_mensaje_out");
+
+        if ("EXITO".equalsIgnoreCase(status)) {
+            List<Map<String, Object>> temas = (List<Map<String, Object>>) result.get("p_temas_cursor");
+            return new ApiResponse<>("EXITO", "Temas obtenidos correctamente", temas);
+        } else {
+            return new ApiResponse<>("ERROR", "Error al obtener los temas: " + message, null);
+        }
+    }
+
 
 }

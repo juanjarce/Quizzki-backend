@@ -1,5 +1,6 @@
 package co.catavento.quizzki.controllers;
 
+import co.catavento.quizzki.records.students.GetAvailableEvaluationsDTO;
 import co.catavento.quizzki.records.teachers.*;
 import co.catavento.quizzki.services.TeacherService;
 import co.catavento.quizzki.utils.ApiResponse;
@@ -8,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/teacher")
@@ -63,6 +67,44 @@ public class TeacherController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<>("ERROR", "Error al crear la opción de respuesta: " + e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/subjects")
+    public ResponseEntity<?> getSubjects(
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            // Extract the token without the "Bearer" prefix
+            String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+
+            // Call the service to obtain available evaluations
+            ApiResponse<List<Map<String, Object>>> response = teacherService.getSubjects(token);
+
+            // Return 200 OK if everything is successful
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            // In case of error, return a message with the error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>("ERROR", "Error al obtener las materias: " + e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/topics")
+    public ResponseEntity<?> getTopics(
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            // Extract the token without the "Bearer" prefix
+            String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+
+            // Call the service to obtain available evaluations
+            ApiResponse<List<Map<String, Object>>> response = teacherService.getTopics(token);
+
+            // Return 200 OK if everything is successful
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            // In case of error, return a message with the error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>("ERROR", "Error al obtener las temas: " + e.getMessage(), null));
         }
     }
 

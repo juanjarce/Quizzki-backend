@@ -3,7 +3,9 @@ package co.catavento.quizzki.repositories;
 import co.catavento.quizzki.records.teachers.CreateAnswerOptionDTO;
 import co.catavento.quizzki.records.teachers.CreateEvaluationDTO;
 import co.catavento.quizzki.records.teachers.CreateQuestionDTO;
+import oracle.jdbc.internal.OracleTypes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
@@ -102,5 +104,30 @@ public class TeacherRepository {
 
         return jdbcCall.execute(params);
     }
+
+    public Map<String, Object> getSubjects() {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("OBTENER_MATERIAS")
+                .declareParameters(
+                        new SqlOutParameter("p_materias_cursor", OracleTypes.CURSOR, new ColumnMapRowMapper()),
+                        new SqlOutParameter("p_estado_out", Types.VARCHAR),
+                        new SqlOutParameter("p_mensaje_out", Types.VARCHAR)
+                );
+
+        return jdbcCall.execute();
+    }
+
+    public Map<String, Object> getTopics() {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("OBTENER_TEMAS")
+                .declareParameters(
+                        new SqlOutParameter("p_temas_cursor", OracleTypes.CURSOR, new ColumnMapRowMapper()),
+                        new SqlOutParameter("p_estado_out", Types.VARCHAR),
+                        new SqlOutParameter("p_mensaje_out", Types.VARCHAR)
+                );
+
+        return jdbcCall.execute(new HashMap<>());
+    }
+
 
 }
