@@ -195,4 +195,24 @@ public class TeacherService {
         }
     }
 
+    public ApiResponse<Void> assignQuestionToEvaluation(AssignQuestionToEvaluationDTO dto, String token) {
+        // Validar token
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Token inválido");
+        }
+
+        // We call the repository
+        Map<String, Object> result = teacherRepository.assignQuestionToEvaluation(dto);
+
+        // We get the status and message of the result
+        String status = (String) result.get("p_estado_out");
+        String message = (String) result.get("p_mensaje_out");
+
+        if ("EXITO".equalsIgnoreCase(status)) {
+            return new ApiResponse<>("EXITO", message, null);
+        } else {
+            return new ApiResponse<>("ERROR", "Error al asignar la pregunta: " + message, null);
+        }
+    }
+
 }

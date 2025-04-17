@@ -1,5 +1,6 @@
 package co.catavento.quizzki.repositories;
 
+import co.catavento.quizzki.records.teachers.AssignQuestionToEvaluationDTO;
 import co.catavento.quizzki.records.teachers.CreateAnswerOptionDTO;
 import co.catavento.quizzki.records.teachers.CreateEvaluationDTO;
 import co.catavento.quizzki.records.teachers.CreateQuestionDTO;
@@ -176,5 +177,27 @@ public class TeacherRepository {
         return jdbcCall.execute(params);
     }
 
+    public Map<String, Object> assignQuestionToEvaluation(AssignQuestionToEvaluationDTO dto) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("CREAR_PREGUNTA_EVALUACION")
+                .declareParameters(
+                        new SqlParameter("p_id_pregunta", Types.NUMERIC),
+                        new SqlParameter("p_id_evaluacion", Types.NUMERIC),
+                        new SqlParameter("p_porcentaje", Types.NUMERIC),
+                        new SqlParameter("p_tiene_tiempo_max", Types.CHAR),
+                        new SqlParameter("p_tiempo_pregunta", Types.NUMERIC),
+                        new SqlOutParameter("p_estado_out", Types.VARCHAR),
+                        new SqlOutParameter("p_mensaje_out", Types.VARCHAR)
+                );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("p_id_pregunta", dto.idQuestion());
+        params.put("p_id_evaluacion", dto.idEvaluation());
+        params.put("p_porcentaje", dto.percentage());
+        params.put("p_tiene_tiempo_max", dto.hasMaxTime());
+        params.put("p_tiempo_pregunta", dto.questionTime());
+
+        return jdbcCall.execute(params);
+    }
 
 }

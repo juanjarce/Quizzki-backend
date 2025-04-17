@@ -156,5 +156,20 @@ public class TeacherController {
         }
     }
 
+    @PostMapping("/evaluation/assign-question")
+    public ResponseEntity<?> assignQuestionToEvaluation(
+            @RequestBody AssignQuestionToEvaluationDTO dto,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            // Extract the token without the "Bearer" prefix
+            String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+
+            ApiResponse<Void> response = teacherService.assignQuestionToEvaluation(dto, token);
+            return ResponseEntity.ok(response); // Return 200 OK
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>("ERROR", "Error al asignar la pregunta a la evaluación: " + e.getMessage(), null));
+        }
+    }
 
 }
