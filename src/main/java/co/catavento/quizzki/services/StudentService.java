@@ -1,5 +1,6 @@
 package co.catavento.quizzki.services;
 
+import co.catavento.quizzki.records.students.GetAvailableEvaluationsDTO;
 import co.catavento.quizzki.repositories.StudentRepository;
 import co.catavento.quizzki.utils.ApiResponse;
 import co.catavento.quizzki.utils.JwtUtil;
@@ -36,6 +37,30 @@ public class StudentService {
             return new ApiResponse<>("EXITO", "Grupos del estudiante obtenidos correctamente", grupos);
         } else {
             return new ApiResponse<>("ERROR", "Error al obtener los grupos: " + message, null);
+        }
+    }
+
+    public ApiResponse<List<Map<String, Object>>> getAvailableEvaluations(GetAvailableEvaluationsDTO dto, String token) {
+        // Token validation
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Token inválido");
+        }
+
+        // Call to the repository to execute the procedure
+        Map<String, Object> result = studentRepository.getAvailableEvaluations(dto);
+
+        // Retrieve status and error message
+        String status = (String) result.get("p_estado_out");
+        String message = (String) result.get("p_mensaje_error_out");
+
+        // Check if the execution was successful
+        if ("EXITO".equalsIgnoreCase(status)) {
+            // Retrieve evaluations from the cursor
+            List<Map<String, Object>> evaluaciones = (List<Map<String, Object>>) result.get("p_evaluaciones_cursor");
+            return new ApiResponse<>("EXITO", "Evaluaciones disponibles obtenidas correctamente", evaluaciones);
+        } else {
+            // If an error occurred, we return the error message
+            return new ApiResponse<>("ERROR", "Error al obtener las evaluaciones: " + message, null);
         }
     }
 

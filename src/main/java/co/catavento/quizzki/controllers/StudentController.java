@@ -1,5 +1,6 @@
 package co.catavento.quizzki.controllers;
 
+import co.catavento.quizzki.records.students.GetAvailableEvaluationsDTO;
 import co.catavento.quizzki.services.StudentService;
 import co.catavento.quizzki.utils.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,26 @@ public class StudentController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<>("ERROR", "Error al obtener los grupos del estudiante: " + e.getMessage(), null));
+        }
+    }
+
+    @GetMapping("/{idStudent}/evaluations")
+    public ResponseEntity<?> getAvailableEvaluations(
+            @RequestBody GetAvailableEvaluationsDTO dto,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            // Extract the token without the "Bearer" prefix
+            String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+
+            // Call the service to obtain available evaluations
+            ApiResponse<List<Map<String, Object>>> response = studentService.getAvailableEvaluations(dto, token);
+
+            // Return 200 OK if everything is successful
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            // In case of error, return a message with the error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>("ERROR", "Error al obtener las evaluaciones del estudiante: " + e.getMessage(), null));
         }
     }
 
