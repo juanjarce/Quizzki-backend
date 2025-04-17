@@ -112,4 +112,27 @@ public class StudentService {
         }
     }
 
+    public ApiResponse<Map<String, Object>> getQuestionOptions(Long questionId, String token) {
+        // Token validation
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Token inválido");
+        }
+
+        // Call to the repository to execute the procedure
+        Map<String, Object> result = studentRepository.getQuestionOptions(questionId);
+
+        // Retrieve status and message
+        String status = (String) result.get("p_estado_out");
+        String message = (String) result.get("p_mensaje_out");
+
+        // Check if the execution was successful
+        if ("EXITO".equalsIgnoreCase(status)) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("opciones", result.get("p_cursor_out"));
+            return new ApiResponse<>("EXITO", message, data);
+        } else {
+            return new ApiResponse<>("ERROR", "Error al obtener las opciones de la pregunta: " + message, null);
+        }
+    }
+
 }

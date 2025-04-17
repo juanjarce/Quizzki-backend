@@ -102,4 +102,20 @@ public class StudentRepository {
         return jdbcCall.execute(params);
     }
 
+    public Map<String, Object> getQuestionOptions(Long questionId) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("OBTENER_OPCIONES_PREGUNTA")
+                .declareParameters(
+                        new SqlParameter("p_id_pregunta", Types.NUMERIC),
+                        new SqlOutParameter("p_cursor_out", OracleTypes.CURSOR),
+                        new SqlOutParameter("p_estado_out", Types.VARCHAR),
+                        new SqlOutParameter("p_mensaje_out", Types.VARCHAR)
+                );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("p_id_pregunta", questionId);
+
+        return jdbcCall.execute(params);
+    }
+
 }

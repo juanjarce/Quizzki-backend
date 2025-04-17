@@ -94,4 +94,20 @@ public class StudentController {
         }
     }
 
+    @GetMapping("/evaluations/questions/{questionId}/options")
+    public ResponseEntity<?> getQuestionOptions(
+            @PathVariable Long questionId,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            // Extract the token without the "Bearer" prefix
+            String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+
+            ApiResponse<Map<String, Object>> response = studentService.getQuestionOptions(questionId, token);
+            return ResponseEntity.ok(response); // Return 200 OK
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>("ERROR", "Error al obtener las opciones de la pregunta: " + e.getMessage(), null));
+        }
+    }
+
 }
