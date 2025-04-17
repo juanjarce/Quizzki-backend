@@ -1,5 +1,6 @@
 package co.catavento.quizzki.services;
 
+import co.catavento.quizzki.records.students.CreateEvaluationPresentationDTO;
 import co.catavento.quizzki.records.students.GetAvailableEvaluationsDTO;
 import co.catavento.quizzki.repositories.StudentRepository;
 import co.catavento.quizzki.utils.ApiResponse;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +63,29 @@ public class StudentService {
         } else {
             // If an error occurred, we return the error message
             return new ApiResponse<>("ERROR", "Error al obtener las evaluaciones: " + message, null);
+        }
+    }
+
+    public ApiResponse<Map<String, Object>> createEvaluationPresentation(CreateEvaluationPresentationDTO dto, String token) {
+        // Token validation
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Token inválido");
+        }
+
+        // Call to the repository to execute the procedure
+        Map<String, Object> result = studentRepository.createEvaluationPresentation(dto);
+
+        // Retrieve status and error message
+        String status = (String) result.get("p_estado_out");
+        String message = (String) result.get("p_mensaje_out");
+
+        // Check if the execution was successful
+        if ("EXITO".equalsIgnoreCase(status)) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("id_presentacion", result.get("p_id_presentacion_out"));
+            return new ApiResponse<>("EXITO", message, data);
+        } else {
+            return new ApiResponse<>("ERROR", "Error al crear la presentación de evaluación: " + message, null);
         }
     }
 

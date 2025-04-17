@@ -1,5 +1,6 @@
 package co.catavento.quizzki.repositories;
 
+import co.catavento.quizzki.records.students.CreateEvaluationPresentationDTO;
 import co.catavento.quizzki.records.students.GetAvailableEvaluationsDTO;
 import oracle.jdbc.internal.OracleTypes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,30 @@ public class StudentRepository {
         System.out.println("id_estudiante: " + dto.idStudent());
         System.out.println("id_grupo: " + dto.idGroup());
         System.out.println("Fecha actual enviada: " + dto.actualDate());
+
+        return jdbcCall.execute(params);
+    }
+
+    public Map<String, Object> createEvaluationPresentation(CreateEvaluationPresentationDTO dto) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("CREAR_PRESENTACION_EVALUACION")
+                .declareParameters(
+                        new SqlParameter("p_id_evaluacion", Types.NUMERIC),
+                        new SqlParameter("p_id_estudiante", Types.NUMERIC),
+                        new SqlParameter("p_ip_source", Types.VARCHAR),
+                        new SqlOutParameter("p_id_presentacion_out", Types.NUMERIC),
+                        new SqlOutParameter("p_estado_out", Types.VARCHAR),
+                        new SqlOutParameter("p_mensaje_out", Types.VARCHAR)
+                );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("p_id_evaluacion", dto.idEvaluation());
+        params.put("p_id_estudiante", dto.idStudent());
+        params.put("p_ip_source", dto.ipSource());
+
+        System.out.println("ID Evaluación: " + dto.idEvaluation());
+        System.out.println("ID Estudiante: " + dto.idStudent());
+        System.out.println("IP del estudiante: " + dto.ipSource());
 
         return jdbcCall.execute(params);
     }
