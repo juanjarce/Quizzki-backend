@@ -129,5 +129,20 @@ public class TeacherRepository {
         return jdbcCall.execute(new HashMap<>());
     }
 
+    public Map<String, Object> getGroupsBySubject(Long idSubject) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("OBTENER_GRUPOS_POR_MATERIA")
+                .declareParameters(
+                        new SqlParameter("p_id_materia", Types.NUMERIC),
+                        new SqlOutParameter("p_grupos_cursor", OracleTypes.CURSOR, new ColumnMapRowMapper()),
+                        new SqlOutParameter("p_estado_out", Types.VARCHAR),
+                        new SqlOutParameter("p_mensaje_out", Types.VARCHAR)
+                );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("p_id_materia", idSubject);
+
+        return jdbcCall.execute(params);
+    }
 
 }

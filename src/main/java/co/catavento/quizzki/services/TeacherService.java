@@ -133,5 +133,25 @@ public class TeacherService {
         }
     }
 
+    public ApiResponse<List<Map<String, Object>>> getGroupsBySubject(Long idSubject, String token) {
+        // Token validation
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Token inválido");
+        }
+
+        // We call the repository
+        Map<String, Object> result = teacherRepository.getGroupsBySubject(idSubject);
+
+        // We get the status and message of the result
+        String status = (String) result.get("p_estado_out");
+        String message = (String) result.get("p_mensaje_out");
+
+        if ("EXITO".equalsIgnoreCase(status)) {
+            List<Map<String, Object>> grupos = (List<Map<String, Object>>) result.get("p_grupos_cursor");
+            return new ApiResponse<>("EXITO", "Grupos obtenidos correctamente", grupos);
+        } else {
+            return new ApiResponse<>("ERROR", "Error al obtener los grupos: " + message, null);
+        }
+    }
 
 }
