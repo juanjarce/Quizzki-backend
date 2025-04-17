@@ -1,5 +1,6 @@
 package co.catavento.quizzki.repositories;
 
+import co.catavento.quizzki.records.students.AnswerQuestionDTO;
 import co.catavento.quizzki.records.students.CreateEvaluationPresentationDTO;
 import co.catavento.quizzki.records.students.GetAvailableEvaluationsDTO;
 import oracle.jdbc.internal.OracleTypes;
@@ -114,6 +115,29 @@ public class StudentRepository {
 
         Map<String, Object> params = new HashMap<>();
         params.put("p_id_pregunta", questionId);
+
+        return jdbcCall.execute(params);
+    }
+
+    public Map<String, Object> registerStudentAnswer(AnswerQuestionDTO dto) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("REGISTRAR_RESPUESTA_ESTUDIANTE")
+                .declareParameters(
+                        new SqlParameter("p_id_presentacion_eval", Types.NUMERIC),
+                        new SqlParameter("p_id_pregunta", Types.NUMERIC),
+                        new SqlParameter("p_id_respuesta", Types.NUMERIC),
+                        new SqlOutParameter("p_estado_out", Types.VARCHAR),
+                        new SqlOutParameter("p_mensaje_out", Types.VARCHAR)
+                );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("p_id_presentacion_eval", dto.idEvaluationPresentation()); // <- este era el error
+        params.put("p_id_pregunta", dto.idQuestion());
+        params.put("p_id_respuesta", dto.idAnswer());
+
+        System.out.println("ID Presentación: " + dto.idEvaluationPresentation());
+        System.out.println("ID Pregunta: " + dto.idQuestion());
+        System.out.println("ID Respuesta: " + dto.idAnswer());
 
         return jdbcCall.execute(params);
     }

@@ -1,5 +1,6 @@
 package co.catavento.quizzki.services;
 
+import co.catavento.quizzki.records.students.AnswerQuestionDTO;
 import co.catavento.quizzki.records.students.CreateEvaluationPresentationDTO;
 import co.catavento.quizzki.records.students.GetAvailableEvaluationsDTO;
 import co.catavento.quizzki.repositories.StudentRepository;
@@ -132,6 +133,27 @@ public class StudentService {
             return new ApiResponse<>("EXITO", message, data);
         } else {
             return new ApiResponse<>("ERROR", "Error al obtener las opciones de la pregunta: " + message, null);
+        }
+    }
+
+    public ApiResponse<Map<String, Object>> registerStudentAnswer(AnswerQuestionDTO dto, String token) {
+        // Token validation
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Token inválido");
+        }
+
+        // Call to the repository to execute the procedure
+        Map<String, Object> result = studentRepository.registerStudentAnswer(dto);
+
+        // Retrieve status and message
+        String status = (String) result.get("p_estado_out");
+        String message = (String) result.get("p_mensaje_out");
+
+        // Check if the execution was successful
+        if ("EXITO".equalsIgnoreCase(status)) {
+            return new ApiResponse<>("EXITO", message, null);
+        } else {
+            return new ApiResponse<>("ERROR", "Error al registrar la respuesta del estudiante: " + message, null);
         }
     }
 
