@@ -161,4 +161,20 @@ public class TeacherRepository {
         return jdbcCall.execute(params);
     }
 
+    public Map<String, Object> assignRandomQuestions(Long idEvaluation) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("ASIGNAR_PREGUNTAS_ALEATORIAS")
+                .declareParameters(
+                        new SqlParameter("p_id_evaluacion", Types.NUMERIC),
+                        new SqlOutParameter("p_estado_out", Types.VARCHAR),
+                        new SqlOutParameter("p_mensaje_out", Types.VARCHAR)
+                );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("p_id_evaluacion", idEvaluation);
+
+        return jdbcCall.execute(params);
+    }
+
+
 }

@@ -140,4 +140,21 @@ public class TeacherController {
         }
     }
 
+    @PostMapping("/evaluation/{idEvaluation}/assign-random-questions")
+    public ResponseEntity<?> assignRandomQuestions(
+            @PathVariable Long idEvaluation,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            // Extract the token without the "Bearer" prefix
+            String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+
+            ApiResponse<Void> response = teacherService.assignRandomQuestions(idEvaluation, token);
+            return ResponseEntity.ok(response); // Return 200 OK
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>("ERROR", "Error al asignar preguntas aleatorias: " + e.getMessage(), null));
+        }
+    }
+
+
 }
