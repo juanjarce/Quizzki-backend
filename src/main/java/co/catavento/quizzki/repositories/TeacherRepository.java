@@ -145,4 +145,20 @@ public class TeacherRepository {
         return jdbcCall.execute(params);
     }
 
+    public Map<String, Object> getActiveQuestionsByTopic(Long idTopic) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("OBTENER_PREGUNTAS_TEMA")
+                .declareParameters(
+                        new SqlParameter("p_id_tema", Types.NUMERIC),
+                        new SqlOutParameter("p_preguntas_cursor", OracleTypes.CURSOR, new ColumnMapRowMapper()),
+                        new SqlOutParameter("p_estado_out", Types.VARCHAR),
+                        new SqlOutParameter("p_mensaje_out", Types.VARCHAR)
+                );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("p_id_tema", idTopic);
+
+        return jdbcCall.execute(params);
+    }
+
 }

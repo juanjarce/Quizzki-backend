@@ -124,4 +124,20 @@ public class TeacherController {
         }
     }
 
+    @GetMapping("/topics/{idTopic}/questions")
+    public ResponseEntity<?> getActiveQuestionsByTopic(
+            @PathVariable Long idTopic,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            // Extract the token without the "Bearer" prefix
+            String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+
+            ApiResponse<List<Map<String, Object>>> response = teacherService.getActiveQuestionsByTopic(idTopic, token);
+            return ResponseEntity.ok(response);  // Return 200 OK
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>("ERROR", "Error al obtener las preguntas activas del tema: " + e.getMessage(), null));
+        }
+    }
+
 }

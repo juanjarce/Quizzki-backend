@@ -154,4 +154,25 @@ public class TeacherService {
         }
     }
 
+    public ApiResponse<List<Map<String, Object>>> getActiveQuestionsByTopic(Long idTopic, String token) {
+        // Validar token
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Token inválido");
+        }
+
+        // We call the repository
+        Map<String, Object> result = teacherRepository.getActiveQuestionsByTopic(idTopic);
+
+        // We get the status and message of the result
+        String status = (String) result.get("p_estado_out");
+        String message = (String) result.get("p_mensaje_out");
+
+        if ("EXITO".equalsIgnoreCase(status)) {
+            List<Map<String, Object>> questions = (List<Map<String, Object>>) result.get("p_preguntas_cursor");
+            return new ApiResponse<>("EXITO", "Preguntas activas del tema obtenidas correctamente", questions);
+        } else {
+            return new ApiResponse<>("ERROR", "Error al obtener preguntas del tema: " + message, null);
+        }
+    }
+
 }
