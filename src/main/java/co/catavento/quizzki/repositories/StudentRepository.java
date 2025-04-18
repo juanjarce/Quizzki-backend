@@ -142,4 +142,22 @@ public class StudentRepository {
         return jdbcCall.execute(params);
     }
 
+    public Map<String, Object> finishEvaluation(Long idPresentationEval) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
+                .withProcedureName("FINALIZAR_PRESENTACION_EXAMEN")
+                .declareParameters(
+                        new SqlParameter("p_id_presentacion_eval", Types.NUMERIC),
+                        new SqlOutParameter("p_estado_out", Types.VARCHAR),
+                        new SqlOutParameter("p_mensaje_out", Types.VARCHAR),
+                        new SqlOutParameter("p_calificacion_out", Types.FLOAT)
+                );
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("p_id_presentacion_eval", idPresentationEval);
+
+        System.out.println("Finalizando presentación con ID: " + idPresentationEval);
+
+        return jdbcCall.execute(params);
+    }
+
 }

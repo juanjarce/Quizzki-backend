@@ -157,4 +157,28 @@ public class StudentService {
         }
     }
 
+    public ApiResponse<Map<String, Object>> finishEvaluation(Long idPresentationEval, String token) {
+        // Token validation
+        if (!jwtUtil.validateToken(token)) {
+            throw new RuntimeException("Token inválido");
+        }
+
+        // Call to the repository to execute the procedure
+        Map<String, Object> result = studentRepository.finishEvaluation(idPresentationEval);
+
+        // Retrieve status and message
+        String status = (String) result.get("p_estado_out");
+        String message = (String) result.get("p_mensaje_out");
+        Double score = (Double) result.get("p_calificacion_out"); // ✅ Correcto
+
+        // Check if the execution was successful
+        if ("EXITO".equalsIgnoreCase(status)) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("calificacion", score);
+            return new ApiResponse<>("EXITO", message, data);
+        } else {
+            return new ApiResponse<>("ERROR", "No se pudo finalizar la presentación: " + message, null);
+        }
+    }
+
 }

@@ -131,4 +131,24 @@ public class StudentController {
         }
     }
 
+    @PostMapping("/evaluations/{idPresentationEval}/finish")
+    public ResponseEntity<?> finishEvaluation(
+            @PathVariable Long idPresentationEval,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            // Extract the token without the "Bearer" prefix
+            String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+
+            // Call the service to obtain available evaluations
+            ApiResponse<Map<String, Object>> response = studentService.finishEvaluation(idPresentationEval, token);
+
+            // Return 200 OK if everything is successful
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            // In case of error, return a message with the error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>("ERROR", "Error al finalizar la presentación: " + e.getMessage(), null));
+        }
+    }
+
 }
