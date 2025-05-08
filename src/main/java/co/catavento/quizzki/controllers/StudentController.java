@@ -39,7 +39,7 @@ public class StudentController {
         }
     }
 
-    @GetMapping("/{idStudent}/evaluations")
+    @PostMapping("/{idStudent}/evaluations")
     public ResponseEntity<?> getAvailableEvaluations(
             @RequestBody GetAvailableEvaluationsDTO dto,
             @RequestHeader("Authorization") String authorizationHeader) {
